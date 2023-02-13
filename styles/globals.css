@@ -105,3 +105,27 @@ a {
     color-scheme: dark;
   }
 }
+
+/* Style for the player in the controller.tsx*/
+
+ .player-container {
+  position: absolute;
+  bottom: 0;
+  width: 15%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  background-color: #005a8c;
+  border-radius: 50px;
+
+}
+
+.play-pause-btn {
+  height: 40px;
+  width: 50px;
+  border-radius: 50px;
+  cursor: pointer;
+}
+

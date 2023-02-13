@@ -5,6 +5,19 @@
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
+  background-color: rgb(50, 50, 58);
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 1rem;
+  background-color:  rgb(15, 172, 133);
+  border: 1px solid rgba(var(--button-border-rgb), 0.3);
+  border-radius: var(--border-radius);
+  margin-top: .5rem;
+  width: 100%;
 }
 
 .description {
@@ -13,7 +26,9 @@
   align-items: inherit;
   font-size: 0.85rem;
   max-width: var(--max-width);
+  max-height: var(--max-height);
   width: 100%;
+  height:100%;
   z-index: 2;
   font-family: var(--font-mono);
 }
