@@ -5,23 +5,37 @@ import TrjectoryPlot from "./TrajectoryComps/TrajectoryPlot";
 import Controller from "./TrajectoryComps/Controller";
 import colors from "@/util/Constants";
 import print from "@/util/print";
-import HeatMap from "./HeatMapComps/HeatMap";  
+import HeatMap from "./HeatMapComps/HeatMap";
 import TrajectoryPlot from "./TrajectoryComps/TrajectoryPlot";
 
-class Visualizations extends React.Component {
+interface Props {
+    userType: string;
+}
+
+class Visualizations extends React.Component<Props> {
     constructor(props) {
         super(props);
+
         this.state = {
             selected: 4,
-            play: false
+            play: false,
+            userType: this.props.userType
         };
         this.handleSelectedChange = this.handleSelectedChange.bind(this);
         this.handlePlayChange = this.handlePlayChange.bind(this);
+        this.onSelectedValueChange = this.onSelectedValueChange.bind(this);
     }
+
 
     handleSelectedChange(selected) {
         this.setState({ selected: selected });
     }
+
+    onSelectedValueChange = (value) => {
+        console.log("value", value);
+        this.setState({ selected: value });
+    }
+
 
     handlePlayChange(play) {
         this.setState({ play: play });
@@ -59,7 +73,8 @@ class Visualizations extends React.Component {
                 justifyContent: "center", alignContent: "center", backgroundColor: colors.PrimaryColorKvalite
             }}>
 
-            {/* TRAJECTORY PLOT */}
+                {/* There is two types of user 1) customer 2)employee  */}
+                {/* TRAJECTORY PLOT */}
                 <Dropdown
                     selected={this.state.selected}
                     onSelectedChange={this.handleSelectedChange}
@@ -68,19 +83,21 @@ class Visualizations extends React.Component {
                     play={this.state.play}
                     onPlayChange={this.handlePlayChange}
                 />
-                <TrjectoryPlot 
+
+                 <TrjectoryPlot 
                     RouteId={this.state.selected}
-                    play={this.state.play} />
+                    play={this.state.play} 
+                    userType={this.state.userType}/> 
 
 
             {/* HEATMAP */}
-
-            {/* <HeatMap />
-            <TrjectoryPlot 
+ 
+               {/* <HeatMap />
+                <TrjectoryPlot
                     RouteId={this.state.selected}
-                    play={false} />  */}
+                    play={false}
+                    userType={this.state.userType} />  */}
 
-                   
             </div>
 
         );

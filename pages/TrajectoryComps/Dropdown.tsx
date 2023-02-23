@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import print from 'util/print';
 import Draggable from "react-draggable";
+import NumberPicker from "react-number-picker";
+ 
+import "react-number-picker/dist/style.css"
 
 
 async function getDropDownElements() {
@@ -25,6 +28,11 @@ const Dropdown = (props: { onSelectedChange: (arg0: number) => void; selected: s
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         props.onSelectedChange(Number(e.target.value));
     };
+    // const handleValueChange = (new_value: number) {
+    //     console.log("new value", new_value);
+    //     props.onSelectedValueChange({value: new_value});
+    // }
+ 
 
     React.useEffect(() => {
         getDropDownElements().then((data) => setDropDownOptions(data));
@@ -43,6 +51,8 @@ const Dropdown = (props: { onSelectedChange: (arg0: number) => void; selected: s
                 ))}
             </select>
         </div>
+
+
         </Draggable>
     );
 };
