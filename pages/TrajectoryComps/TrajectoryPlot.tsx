@@ -100,7 +100,8 @@ function drawRect(svg, data, xScale, yScale, width, height, color, class_name) {
     });
 }
 
-// A function to draw arrow given the start and end point of the arrow and the svg element
+//A function to draw arrow given the start and end point of the arrow and the svg element
+
 function drawArrow(svg, data, xScale, yScale, width, height, color) {
   data.map((d: any) => {
     if (d[4].includes("ONEWAY")) {

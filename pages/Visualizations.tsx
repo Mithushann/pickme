@@ -7,6 +7,8 @@ import colors from "@/util/Constants";
 import print from "@/util/print";
 import HeatMap from "./HeatMapComps/HeatMap";
 import TrajectoryPlot from "./TrajectoryComps/TrajectoryPlot";
+import CustomizedMenus from "./components/menubutton"
+import PointHeatmap from "./PointHeatmap/pointHeatMap";
 
 interface Props {
     userType: string;
@@ -19,11 +21,13 @@ class Visualizations extends React.Component<Props> {
         this.state = {
             selected: 4,
             play: false,
-            userType: this.props.userType
+            userType: this.props.userType,
+            Vis: 0,
         };
         this.handleSelectedChange = this.handleSelectedChange.bind(this);
         this.handlePlayChange = this.handlePlayChange.bind(this);
         this.onSelectedValueChange = this.onSelectedValueChange.bind(this);
+        this.onSelectedVizChange = this.onSelectedVizChange.bind(this);
     }
 
 
@@ -40,6 +44,12 @@ class Visualizations extends React.Component<Props> {
     handlePlayChange(play) {
         this.setState({ play: play });
     }
+
+    onSelectedVizChange = (Viss) => {
+        console.log("viz", Viss);
+        this.setState({ Vis: Viss });
+    }
+
 
     // Get the size of the window at any given time
     useWindowSize() {
@@ -67,37 +77,60 @@ class Visualizations extends React.Component<Props> {
 
     render() {
         return (
+
             //flexbox container
             <div style={{
                 width: this.useWindowSize.width, height: this.useWindowSize.height, display: "flex", flexDirection: "row",
-                justifyContent: "center", alignContent: "center", backgroundColor: colors.PrimaryColorKvalite
+                backgroundColor: colors.PrimaryColorKvalite
             }}>
 
-                {/* There is two types of user 1) customer 2)employee  */}
-                {/* TRAJECTORY PLOT */}
-                <Dropdown
-                    selected={this.state.selected}
-                    onSelectedChange={this.handleSelectedChange}
+                <CustomizedMenus
+                    onVisChange={this.onSelectedVizChange}
                 />
-                <Controller
-                    play={this.state.play}
-                    onPlayChange={this.handlePlayChange}
-                />
+                {this.state.Vis == 0 &&
+                    // Trajectory plot
+                    <div>
+                        <Dropdown
+                            selected={this.state.selected}
+                            onSelectedChange={this.handleSelectedChange}
+                        />
+                        <Controller
+                            play={this.state.play}
+                            onPlayChange={this.handlePlayChange}
+                        />
 
-                 <TrjectoryPlot 
-                    RouteId={this.state.selected}
-                    play={this.state.play} 
-                    userType={this.state.userType}/> 
+                        <TrjectoryPlot
+                            RouteId={this.state.selected}
+                            play={this.state.play}
+                            userType={this.state.userType} />
+                    </div>
+                }
 
+                {this.state.Vis == 1 &&
+                    // Point Heatmap
+                    <div>
 
-            {/* HEATMAP */}
- 
-               {/* <HeatMap />
-                <TrjectoryPlot
-                    RouteId={this.state.selected}
-                    play={false}
-                    userType={this.state.userType} />  */}
+                        <PointHeatmap
+                            RouteId={this.state.selected}
+                            play={this.state.play}
+                            userType={this.state.userType}
+                            
+                        
+                        />
 
+                    </div>
+
+                }
+                {this.state.Vis == 2 &&
+                    // heatmap
+                    <div>
+                        <HeatMap />
+                        <TrjectoryPlot
+                            RouteId={this.state.selected}
+                            play={false}
+                            userType={this.state.userType} />
+
+                    </div>}
             </div>
 
         );
