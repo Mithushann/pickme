@@ -14,7 +14,6 @@ export default class HeatMap extends Component {
     render(){
         return(
             <div>
-                
                 <Heat></Heat>
             </div>
         )

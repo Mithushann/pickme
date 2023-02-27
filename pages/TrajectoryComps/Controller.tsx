@@ -3,31 +3,46 @@
 import React, { useState } from "react";
 import colors from "@/util/Constants";
 import Draggable from 'react-draggable';
-import playBtn from '@/public/play.png';
-import closeBtn from '@/public/close.png';
-import Image from 'next/image'
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import CancelIcon from '@mui/icons-material/Cancel';
 import print from '@/util/print';
- 
+import Dropdown from "./Dropdown";
+import MultipleSelectChip from "../components/ChipDropdown";
+
 
 const Player = (props) => {
     const nodeRef = React.useRef(null);
+
     return (
         <Draggable nodeRef={nodeRef} bounds='parent'>
-            
             <div ref={nodeRef} className="player-container">
-                    <Image className='play-pause-btn' 
-                    src={
-                        props.play?closeBtn : playBtn
-                    } 
-                    alt="play" 
-                    onClick={() => {
-                        props.onPlayChange(!props.play)
-                        }}/>
-
-
+                        {props.play ?
+                            <CancelIcon className='play-pause-btn'
+                                style={{ color: colors.PrimaryColorInnovativ }}
+                                onClick={() => {
+                                    props.onPlayChange(!props.play)
+                                }} />
+                            :
+                            <PlayCircleOutlineIcon className='play-pause-btn'
+                                style={{ color: colors.PrimaryColorInnovativ }}
+                                onClick={() => {
+                                    props.onPlayChange(!props.play)
+                                }} />
+                        }
+            <MultipleSelectChip
+                selected={props.selected}
+                onSelectedChange={props.onSelectedChange}
+            />
             </div>
+           
+
+              {/* <Dropdown
+                        selected={props.selected}
+                        onSelectedChange={props.onSelectedChange}
+                    /> */}
         </Draggable>
     );
 };
 
 export default Player;
+

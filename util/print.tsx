@@ -1,5 +1,7 @@
-function print(arg: any) {
-  console.log(arg);
+
+function print(arg="", arg2="") {
+  console.log(arg );
+  console.log(arg2);
 }
 
 

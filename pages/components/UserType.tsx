@@ -1,12 +1,15 @@
+// Create a button with a dropdown menu that changes the visualization depending on the usertype
+
+// Path: pages\components\CustomizedMenuButton.tsx
+
 import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
-import Button from '@mui/material/Button';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import colors from "@/util/Constants";
 
 const StyledMenu = styled((props: MenuProps) => (
     <Menu
@@ -49,7 +52,7 @@ const StyledMenu = styled((props: MenuProps) => (
     },
 }));
 
-export default function CustomizedMenus(props) {
+export default function UserTypeButton(props) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -61,18 +64,20 @@ export default function CustomizedMenus(props) {
 
     const handleMenuItemClick = (
         event: React.MouseEvent<HTMLElement>,
-        index: number,
+        userType: string,
     ) => {
-        props.onVisChange(index);
+        props.onUserChange(userType);
         setAnchorEl(null);
     };
 
 
     return (
         
-        <div style={{ position: "absolute", justifySelf: 'center', zIndex:1 }}>
+        <div style={{ position: "absolute", marginRight:50 , zIndex:1, width:50, height:50}}>
             <IconButton onClick={handleClick}>
-                <MenuIcon />
+                <AccountCircleIcon
+                style={{ color: colors.PrimaryColorTrygg }}
+                />
             </IconButton>
 
 
@@ -86,24 +91,17 @@ export default function CustomizedMenus(props) {
                 }}
             >
                 <MenuItem
-                    onClick={(event) => handleMenuItemClick(event, 0)}
+                    onClick={(event) => handleMenuItemClick(event, "employee")}
                     disableRipple
                 >
-                    Trajectory plot
+                    Employee
                 </MenuItem>
 
                 <MenuItem
-                    onClick={(event) => handleMenuItemClick(event, 1)}
+                    onClick={(event) => handleMenuItemClick(event, "customer")}
                     disableRipple
                 >
-                    Point Heatmap
-                </MenuItem>
-
-                <MenuItem
-                    onClick={(event) => handleMenuItemClick(event, 2)}
-                    disableRipple
-                >
-                    Heat map
+                    Customer
                 </MenuItem>
 
             </StyledMenu>

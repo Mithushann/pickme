@@ -83,7 +83,7 @@ function Tooltip(svg, x, y, content, windowWidth, windowHeight) {
 const CreateHeat = (svgRef: any, data: any, inWidth: number, inHeight: number) => {
     var margin = { top: 0, right: 0, bottom: 0, left: 0 },
         width = inWidth - margin.left - margin.right,
-        height = inHeight - margin.top - margin.bottom;
+        height = inHeight - margin.top - margin.bottom-4;
 
     var x = d3.scaleLinear()
         .range([0, width])
@@ -104,16 +104,6 @@ const CreateHeat = (svgRef: any, data: any, inWidth: number, inHeight: number) =
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    // print a rect for each color in the blackShades array
-    // blackShades.forEach((color, i) => {
-    //     svg.append("rect")
-    //         .attr("x", 0)
-    //         .attr("y", i * 20)
-    //         .attr("width", 20)
-    //         .attr("height", 20)
-    //         .style("fill", color);
-    // });
 
     var row = svg.selectAll(".row")
         .data(data)

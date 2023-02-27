@@ -48,14 +48,16 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>){
                        isDuplicate = true
                     }
                 }
-                if(!isDuplicate) uniqueVec.push([d.Xcorrdinate, d.Ycorrdinate])
+                if(!isDuplicate){ 
+                  uniqueVec.push([d.Xcorrdinate, d.Ycorrdinate])
+                  print("d", d )
+                }
             }
 
             return uniqueVec
         
           });
-
-          print('uniqueData', data) 
+          //-------------------------------------------------
 
         // create a heatmap
         const heatmap = svg
@@ -72,7 +74,6 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>){
           .attr("fill", "red")
           .attr("opacity", 0.5);
     
-
         dataAll.forEach((d: any) => {
             if(d.Nodetype =="PICKUP"){
             svg.append("circle")
@@ -90,6 +91,7 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>){
     });                 
 
 }
+
 const PointHeatmap = (props: { userType: string }) => {
     const svg = React.useRef<SVGSVGElement>(null);
   

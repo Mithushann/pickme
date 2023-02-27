@@ -122,9 +122,8 @@ function drawRect(svg, data, xScale, yScale, width, height, color, class_name) {
 
   export default function Layout(svgRef: React.RefObject<SVGSVGElement>, userType: string) {
     getLayout().then((data) => {
-      const width = window.innerWidth - 20;
-      const height = window.innerHeight - 20;
-  
+      const width = window.innerWidth;
+      const height = window.innerHeight-4;
       // normalize the data to fit the svg element
       const xScale = d3.scaleLinear().domain([0, 1]).range([0, width]);
       const yScale = d3.scaleLinear().domain([0, 1]).range([0, height]);

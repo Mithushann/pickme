@@ -4,9 +4,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import print from 'util/print';
 import Draggable from "react-draggable";
-import NumberPicker from "react-number-picker";
- 
-import "react-number-picker/dist/style.css"
+import "react-number-picker/dist/style.css";
 
 
 async function getDropDownElements() {
@@ -28,11 +26,6 @@ const Dropdown = (props: { onSelectedChange: (arg0: number) => void; selected: s
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         props.onSelectedChange(Number(e.target.value));
     };
-    // const handleValueChange = (new_value: number) {
-    //     console.log("new value", new_value);
-    //     props.onSelectedValueChange({value: new_value});
-    // }
- 
 
     React.useEffect(() => {
         getDropDownElements().then((data) => setDropDownOptions(data));
@@ -41,19 +34,17 @@ const Dropdown = (props: { onSelectedChange: (arg0: number) => void; selected: s
     const nodeRef = React.useRef(null);
 
     return (
-        <Draggable nodeRef={nodeRef} bounds='parent'>
-        <div ref={nodeRef} style={{position:'absolute', zIndex:1}}>
-            <select value={props.selected} onChange={handleChange}>
-                {DropDownOptions.map((option) => (
-                    <option key={option} value={option}>
-                        {option}
-                    </option>
-                ))}
-            </select>
-        </div>
-
-
-        </Draggable>
+        // <Draggable nodeRef={nodeRef} bounds='parent'>
+            <div ref={nodeRef} style={{ position: 'relative', justifyContent: 'left', marginLeft:10, zIndex: 1 }}>
+                <select value={props.selected} onChange={handleChange}>
+                    {DropDownOptions.map((option) => (
+                        <option key={option} value={option}>
+                            {option}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        // </Draggable>
     );
 };
 
