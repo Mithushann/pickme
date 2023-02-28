@@ -7,8 +7,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
-import axios from 'axios';
 import print from '@/util/print';
+import axios from 'axios';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -21,9 +21,14 @@ const MenuProps = {
     },
 };
 
-async function getDropDownElements() {
+async function getDropDownElements(){
     try {
+        const start = new Date().getTime();
         const response = await axios.get("http://localhost:3333/api/getAll");
+        let elapsed = new Date().getTime() - start;
+        
+        print("getDropDownElements: " + Math.ceil(elapsed/1000) + "s");
+
         const Data = response.data;
         const RouteIdList = Data.map((d: any) => d.RouteId);
         const uniqueRouteIdList = [...new Set(RouteIdList)];//remove duplicates
@@ -45,16 +50,15 @@ function getStyles(option: string, selectedRoutes: readonly string[], theme: The
 
 export default function MultipleSelectChip(props) {
     const theme = useTheme();
+
     const [DropDownOptions, setDropDownOptions] = React.useState<number[]>([]);
     const [selectedRoutes, setSelectedRoutes] = React.useState<string[]>([]);
 
-
-    getDropDownElements().then((data) => setDropDownOptions(data));
-
     React.useEffect(() => {
-       props.onSelectedChange(selectedRoutes);
+        getDropDownElements().then((data) => setDropDownOptions(data));
+        props.onSelectedChange(selectedRoutes);
     }, [selectedRoutes]
-        );
+    );
 
 
 
@@ -67,12 +71,11 @@ export default function MultipleSelectChip(props) {
             typeof value === 'string' ? value.split(',') : value,
         );
 
-        // props.onSelectedChange( typeof value === 'string' ? value.split(',') : value,);
     };
 
     return (
         <div>
-            <FormControl sx={{ m: 1, width: 300, borderRadius:25}}>
+            <FormControl sx={{ m: 1, width: 300, borderRadius: 25 }}>
                 <InputLabel id="demo-multiple-chip-label">Route</InputLabel>
                 <Select
                     labelId="demo-multiple-chip-label"
@@ -82,9 +85,9 @@ export default function MultipleSelectChip(props) {
                     onChange={handleChange}
                     input={<OutlinedInput id="select-multiple-chip" label="Route" />}
                     renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.3}}>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.3 }}>
                             {selected.map((value) => (
-                                <Chip key={value} label={value}  />
+                                <Chip key={value} label={value} />
                             ))}
                         </Box>
                     )}
@@ -104,7 +107,5 @@ export default function MultipleSelectChip(props) {
         </div>
     );
 }
-function componentDidMount() {
-    throw new Error('Function not implemented.');
-}
+
 

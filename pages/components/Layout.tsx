@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as d3 from "d3";
-import axios from "axios";
 import jsonParser from '@/util/JsonParser';
 import { svg } from "d3";
 import print from 'util/print';
@@ -8,27 +7,27 @@ import colors from "@/util/Constants";
 
 function Tooltip(svg, x, y, content, windowWidth, windowHeight) {
 
-    svg.append("rect")
-      .attr("id", "tooltip_rect_t")
-      .attr("x", () => {
-        if (x > windowWidth / 2) return x - 220
-        else return x
-      })
-      .attr("y", () => { if (y > windowHeight / 2) { return y - 50 } else { return y } })
-      .attr("width", 257)
-      .attr("height", 50)
-      .attr("fill", "blue")
-      .attr("opacity", .75)
-  
-    svg.append("text")
-      .attr("id", "tooltip_text_t")
-      .attr("x", () => { if (x > windowWidth / 2) { return x - 220 + 10 } else { return x + 10 } })
-      .attr("y", () => { if (y > windowHeight / 2) { return y - 50 + 25 } else { return y + 25 } })
-      .text(content)
-      .attr("font-size", 20)
-      .attr("fill", "black")
-  
-  }
+  svg.append("rect")
+    .attr("id", "tooltip_rect_t")
+    .attr("x", () => {
+      if (x > windowWidth / 2) return x - 220
+      else return x
+    })
+    .attr("y", () => { if (y > windowHeight / 2) { return y - 50 } else { return y } })
+    .attr("width", 257)
+    .attr("height", 50)
+    .attr("fill", "blue")
+    .attr("opacity", .75)
+
+  svg.append("text")
+    .attr("id", "tooltip_text_t")
+    .attr("x", () => { if (x > windowWidth / 2) { return x - 220 + 10 } else { return x + 10 } })
+    .attr("y", () => { if (y > windowHeight / 2) { return y - 50 + 25 } else { return y + 25 } })
+    .text(content)
+    .attr("font-size", 20)
+    .attr("fill", "black")
+
+}
 
 async function getLayout() {
     let data = null;
@@ -151,5 +150,7 @@ function drawRect(svg, data, xScale, yScale, width, height, color, class_name) {
         drawRect(svg, data.Elevator, xScale, yScale, width, height, "#9a674a ", "elevator");
       }
       drawArrow(svg, data.Aisle, xScale, yScale, width, height, "lightgrey");
+
+      d3.selectAll('rect').lower()
     });
   }
