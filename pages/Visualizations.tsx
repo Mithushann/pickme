@@ -8,6 +8,7 @@ import CustomizedMenus from "./components/CustomizedMenuButton"
 import PointHeatmap from "./PointHeatmap/pointHeatMap";
 import UserTypeButton from "./components/UserType";
 import ManuelTrajectoryPlot from "./ManuelTrajectoryPlot/ManuelTrajectoryPlot";
+import RefillStateGraph from "./RefillStateGraph/RefillStateGraph";
 
 
 class Visualizations extends React.Component {
@@ -130,6 +131,15 @@ class Visualizations extends React.Component {
                     </div>
 
                 }
+                {
+                this.state.Vis == 4 &&
+                <div>
+                    <RefillStateGraph 
+                    userType="this.state.userType"
+                    />
+                </div>
+                }
+
             </div>
         );
     }

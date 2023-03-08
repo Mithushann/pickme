@@ -113,6 +113,13 @@ export default function CustomizedMenus(props) {
                     Drawable T-Plot
                 </MenuItem>
 
+                <MenuItem
+                    onClick={(event) => handleMenuItemClick(event, 4)}
+                    disableRipple
+                >
+                    Refill state graph
+                </MenuItem>
+
                
 
             </StyledMenu>

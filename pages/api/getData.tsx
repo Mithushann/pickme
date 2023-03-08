@@ -6,7 +6,7 @@ import axios from "axios";
     try {
       const response = await axios.get("http://localhost:3333/api/getAll");
       const Data = response.data;
-      const cords = Data.map((d: any) => [d.Xcorrdinate, d.Ycorrdinate]);
+      const cords = Data.map((d: any) => [d.Xcorrdinate, d.Ycorrdinate, d.Nodetype]);
       return cords;
     }
     catch (error) {

@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import axios from "axios";
 import print from 'util/print';
 import { getAllCords, getCords } from "pages/api/getData";
+
 export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
   null, unknown, null, undefined>, RouteId: number, xScale: d3.ScaleLinear<number, number, never>, yScale: d3.ScaleLinear<number, number, never>, width: number, height: number) {
   // print("RouteIds", String(RouteId))
@@ -45,7 +46,7 @@ export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
       .attr("stroke-dashoffset", 0)
       .transition()
 
-    Stringing path 
+    // Stringing path 
       .duration(100000)
       .attr("stroke-dashoffset", pathLength)
       .attr("stroke-dasharray", pathLength)
