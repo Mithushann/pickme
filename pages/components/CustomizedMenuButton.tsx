@@ -106,6 +106,13 @@ export default function CustomizedMenus(props) {
                     Heat map
                 </MenuItem>
 
+                <MenuItem
+                    onClick={(event) => handleMenuItemClick(event, 3)}
+                    disableRipple
+                >
+                    Drawable T-Plot
+                </MenuItem>
+
                
 
             </StyledMenu>

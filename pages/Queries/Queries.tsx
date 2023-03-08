@@ -39,6 +39,19 @@ optimization(optimizationId:"cle41z5es815906mgsx34ry3v") {
    }
  }`;
 
+// Query for getting all roles
+const GET_ROLES = gql`
+  query roles {
+    roles {
+      id
+      name
+      divisions {
+        id
+      }
+    }
+  }
+`;
 
- 
+
+
 

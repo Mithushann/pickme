@@ -66,13 +66,15 @@ function jsonParse(json: JSON): any {
   let RecordListZone: never[] = [];
   let RecordListElevator: never[] = [];
   let RecordListDepot: never[] = [];
+  let RecordListShelf: never[] = [];
 
   //javascript object example
   let overallValues ={ "MaxX" : -1000, "MaxY" : -1000, "MinX" : 1000, "MinY" : 1000, }
 
   // Extract the x, y coordinates of bottom 4 vertices of the 3D object RACK and store them in a list
   json.objects.map((object: any) => {
-    // console.log(object.name)
+
+    console.log(object)
     extractCoordinates("RACK", object, RecordListRack, overallValues);
     extractCoordinates("AISLE", object, RecordListAisle, overallValues);
     extractCoordinates("WALL", object, RecordListWall, overallValues);
@@ -80,6 +82,7 @@ function jsonParse(json: JSON): any {
     extractCoordinates("ZONE", object, RecordListZone, overallValues);
     extractCoordinates("ELEVATOR", object, RecordListElevator, overallValues);
     extractCoordinates("DEPOT", object, RecordListDepot, overallValues);
+    // extractCoordinates("SHELF", object, RecordListShelf, overallValues);
 
   });
 
@@ -91,6 +94,7 @@ function jsonParse(json: JSON): any {
     "Zone":createArgs2canvas(RecordListZone, overallValues),
     "Elevator":createArgs2canvas(RecordListElevator, overallValues),
     "Depot":createArgs2canvas(RecordListDepot, overallValues),
+    // "Shelf":createArgs2canvas(RecordListShelf, overallValues),
   }
 
 return drawableObjects;

@@ -214,8 +214,8 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
       }
     })
 
-    print("max: ",String(max))
-    print("min: ", String(min))
+    // print("max: ",String(max))
+    // print("min: ", String(min))
 
   })
     .catch((error) => {

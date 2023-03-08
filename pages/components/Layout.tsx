@@ -36,6 +36,7 @@ async function getLayout() {
       .then((response) => response.json())
       .then((d) => {
         data = jsonParser(d[0]);
+        print(data)
       })
       .catch((error) => {
         console.error('Error:', error);

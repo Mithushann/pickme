@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Dropdown from "./TrajectoryComps/Dropdown";
+// import Dropdown from "./TrajectoryComps/Dropdown";
 import TrjectoryPlot from "./TrajectoryComps/TrajectoryPlot";
 import Controller from "./TrajectoryComps/Controller";
 import colors from "@/util/Constants";
@@ -7,6 +7,7 @@ import HeatMap from "./HeatMapComps/HeatMap";
 import CustomizedMenus from "./components/CustomizedMenuButton"
 import PointHeatmap from "./PointHeatmap/pointHeatMap";
 import UserTypeButton from "./components/UserType";
+import ManuelTrajectoryPlot from "./ManuelTrajectoryPlot/ManuelTrajectoryPlot";
 
 
 class Visualizations extends React.Component {
@@ -18,7 +19,7 @@ class Visualizations extends React.Component {
             play: false,
             userType: "",
             Vis: 0,
-            windowWidth:  0, 
+            windowWidth: 0,
             windowHeight: 0,
         };
         // this.handleSelectedChange = this.handleSelectedChange.bind(this);
@@ -26,7 +27,7 @@ class Visualizations extends React.Component {
         this.onSelectedValueChange = this.onSelectedValueChange.bind(this);
         this.onSelectedVizChange = this.onSelectedVizChange.bind(this);
         this.handleUserChange = this.handleUserChange.bind(this);
-       
+
     }
     // handleSelectedChange(selected: any) {
     //     this.setState({ selected: selected });
@@ -44,24 +45,24 @@ class Visualizations extends React.Component {
         this.setState({ userType: userType });
     }
 
-    
-  componentDidMount() {
-    this.updateWindowDimensions();
-    window.addEventListener("resize", this.updateWindowDimensions);
-  }
 
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.updateWindowDimensions);
-  }
+    componentDidMount() {
+        this.updateWindowDimensions();
+        window.addEventListener("resize", this.updateWindowDimensions);
+    }
 
-  updateWindowDimensions = () => {
-    this.setState({
-        windowWidth: window.innerWidth, 
-        windowHeight: window.innerHeight
-    });
-  };
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateWindowDimensions);
+    }
 
-    
+    updateWindowDimensions = () => {
+        this.setState({
+            windowWidth: window.innerWidth,
+            windowHeight: window.innerHeight
+        });
+    };
+
+
 
     render() {
         return (
@@ -105,12 +106,30 @@ class Visualizations extends React.Component {
                 {this.state.Vis == 2 &&
                     // heatmap
                     <div>
-                        <HeatMap/>
+                        <HeatMap />
                         <TrjectoryPlot
                             RouteId={this.state.selected}
                             play={false}
                             userType={this.state.userType} />
                     </div>}
+
+                {this.state.Vis == 3 &&
+
+                    <div>
+                           <Controller
+                            play={this.state.play}
+                            onPlayChange={this.handlePlayChange}
+                            selected={this.state.selected}
+                            onSelectedChange={this.onSelectedValueChange}
+                        />
+                        
+                        <ManuelTrajectoryPlot
+                            play={this.state.play}
+                            RouteIds={this.state.selected}
+                            userType={this.state.userType} />
+                    </div>
+
+                }
             </div>
         );
     }
