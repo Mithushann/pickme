@@ -130,22 +130,36 @@ a {
   cursor: pointer;
 }
 
-/* style for the arrow */
-
-/* .arrow{
-  stroke-width:5;
-  stroke:#000;
-  stroke-dasharray:5, 5;
+/* style for the comparison view */
+.cv-container {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
- circle{
-  stroke-width:5;
-  stroke:#000;
-  fill:#FFF;
-} 
+.cv-top-view {
+  flex: 4;
+  flex-direction: row;
+  display: flex;
+  /*no scroll bar*/
+  overflow: hidden;
 
-#turtle-icon, #arrow{
-  stroke-width:1;
-  stroke-dasharray:0;	
-} */
+}
+
+.cv-top-view-right {
+  flex: 1;
+  border-left:rgba(22, 58, 88) 1px solid;
+}
+
+.cv-top-view-left {
+  flex: 1;
+  border-right:rgb(22, 58, 88) 1px solid;
+}
+
+.cv-bottom-view {
+  flex: 1;
+  border-top:rgb(22, 58, 88) 1px solid;
+}
+
 

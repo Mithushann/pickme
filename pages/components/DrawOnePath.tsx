@@ -4,9 +4,44 @@ import print from 'util/print';
 import { getAllCords, getCords } from "pages/api/getData";
 
 export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
-  null, unknown, null, undefined>, RouteId: number, xScale: d3.ScaleLinear<number, number, never>, yScale: d3.ScaleLinear<number, number, never>, width: number, height: number) {
-  // print("RouteIds", String(RouteId))
+  null, unknown, null, undefined>, RouteId: number, xScale: d3.ScaleLinear<number, number, never>, yScale: d3.ScaleLinear<number, number, never>, width: number, height: number, isStatic: boolean = false) {
 
+
+  // print("RouteIds", String(RouteId))
+    if (isStatic) {
+      // Here goes the static line drawing
+      getCords(RouteId).then((data) => {
+        // sort the data based on the order
+        data.sort((a: any, b: any) => a.order - b.order);
+    
+        // An array of 5 diffrent colors
+        const colors = ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231"];
+    
+        // svg.selectAll("path.route").remove();
+        svg
+          .selectAll("path.route" + RouteId)
+          .data([data])
+          .enter()
+          .append("path")
+          .attr("class", "route" + RouteId)
+          .attr("fill", "none")
+          .attr("stroke", colors[RouteId % 5])
+          .attr("stroke-linejoin", "round")
+          .attr("stroke-linecap", "round")
+          .attr("stroke-width", 3)
+          .attr("d", d3.line()
+            .x((d) => xScale(Number(d.Xcorrdinate)))
+            .y((d) => height - yScale(Number(d.Ycorrdinate)))
+    
+          );
+
+   
+      });
+      //----------------------------------------
+
+    }
+
+    else {
 
   getCords(RouteId).then((data) => {
     // sort the data based on the order
@@ -64,7 +99,6 @@ export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
       .attr("r", 10)
       .style("fill", "red");
 
-
     // Animate the icon along the path
     var totalLength = path.node().getTotalLength();
     icon.transition()
@@ -76,12 +110,6 @@ export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
         }
       });
 
-    //---------------------------------------------------
-
-
-
-
-    // svg.selectAll("circle").remove();
     svg
       .selectAll("circle" + RouteId)
       .attr("class", "circle" + RouteId)
@@ -99,5 +127,5 @@ export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
       })
     d3.selectAll("circle" + RouteId).raise();
   });
-
+}
 }

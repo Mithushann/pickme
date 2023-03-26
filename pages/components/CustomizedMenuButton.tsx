@@ -103,21 +103,32 @@ export default function CustomizedMenus(props) {
                     onClick={(event) => handleMenuItemClick(event, 2)}
                     disableRipple
                 >
-                    Heat map
+                    {/* Heat map */}
+                    Refill state graph
                 </MenuItem>
 
                 <MenuItem
                     onClick={(event) => handleMenuItemClick(event, 3)}
                     disableRipple
                 >
-                    Drawable T-Plot
+                    Comparison view
+                    {/* Drawable T-Plot */}
                 </MenuItem>
 
                 <MenuItem
                     onClick={(event) => handleMenuItemClick(event, 4)}
                     disableRipple
                 >
-                    Refill state graph
+                    {/* Refill state graph */}
+                    Heat map
+                </MenuItem>
+
+                <MenuItem
+                    onClick={(event) => handleMenuItemClick(event, 5)}
+                    disableRipple
+                >
+                    Drawable T-Plot
+                    {/* Comparison view */}
                 </MenuItem>
 
                

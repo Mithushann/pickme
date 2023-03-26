@@ -1,8 +1,5 @@
-import  print  from 'util/print';
-
 function extractCoordinates( typeofObject: string, object: any, RecordList: any, overallValues: any) {
   if (object.name.includes(typeofObject)) {
-    // print(object)
   let RecCord: any[][] = [];
   object.vertices.map((vertex: any) => {
     if (vertex[2] == 0) {
@@ -26,7 +23,6 @@ function extractCoordinates( typeofObject: string, object: any, RecordList: any,
 
   RecCord.push(object.name)
 
-// print(RecCord)
   RecordList.push(RecCord);
 }
 }
@@ -36,7 +32,6 @@ function createArgs2canvas(RecordListRack: any, overallValues: any) {
   let RecArgCanvas: number[][] = [];
 
   RecordListRack.map((v: any) => {
-    // print(v)
     //get the minimum and maximum x and y values
     let minX = Math.min(v[0][0], v[1][0], v[2][0], v[3][0]);
     let maxX = Math.max(v[0][0], v[1][0], v[2][0], v[3][0]);
@@ -74,7 +69,6 @@ function jsonParse(json: JSON): any {
   // Extract the x, y coordinates of bottom 4 vertices of the 3D object RACK and store them in a list
   json.objects.map((object: any) => {
 
-    console.log(object)
     extractCoordinates("RACK", object, RecordListRack, overallValues);
     extractCoordinates("AISLE", object, RecordListAisle, overallValues);
     extractCoordinates("WALL", object, RecordListWall, overallValues);

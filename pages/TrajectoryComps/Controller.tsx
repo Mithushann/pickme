@@ -6,8 +6,7 @@ import Draggable from 'react-draggable';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel';
 import print from '@/util/print';
-import Dropdown from "./Dropdown";
-import MultipleSelectChip from "../components/ChipDropdown";
+import MultipleSelectChip from "./ChipDropdown";
 
 
 const Player = (props) => {

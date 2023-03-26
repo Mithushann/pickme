@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import Layout from '../components/Layout';
 import print from 'util/print';
 import axios from 'axios';
+import { getCords, getDataFromOptiplanWarehouse } from '../api/getData';
 
 function interpolateColor(color1: number[], color2: number[], factor: number): number[] {
   const result = [];
@@ -22,7 +23,6 @@ for (let i = 0; i < 10; i++) {
   const color = interpolateColor(blue, red, factor);
   colorScale.push(color);
 }
-console.log(colorScale);
 return colorScale;
 }
 
@@ -50,6 +50,8 @@ function Tooltip(svg, x, y, content, windowWidth, windowHeight) {
 
 }
 
+
+
 async function getAllCords() {
   try {
     const response = await axios.get("http://localhost:3333/api/getAll");
@@ -66,6 +68,10 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
   const height = window.innerHeight - 4;
 
   const svg = d3.select(svgRef.current);
+
+  getDataFromOptiplanWarehouse().then((data) => {
+    print(data);
+  });
 
   getAllCords().then((dataAll) => {
 
@@ -213,10 +219,6 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
           });
       }
     })
-
-    // print("max: ",String(max))
-    // print("min: ", String(min))
-
   })
     .catch((error) => {
       console.log(error);

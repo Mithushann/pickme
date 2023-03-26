@@ -9,6 +9,7 @@ import PointHeatmap from "./PointHeatmap/pointHeatMap";
 import UserTypeButton from "./components/UserType";
 import ManuelTrajectoryPlot from "./ManuelTrajectoryPlot/ManuelTrajectoryPlot";
 import RefillStateGraph from "./RefillStateGraph/RefillStateGraph";
+import ComparisonView from "./ComparisonView/ComparisonView";
 
 
 class Visualizations extends React.Component {
@@ -104,7 +105,27 @@ class Visualizations extends React.Component {
                         />
                     </div>
                 }
-                {this.state.Vis == 2 &&
+                {
+                    this.state.Vis == 2 &&
+                    <div>
+                        <RefillStateGraph
+                            userType="this.state.userType"
+                        />
+                    </div>
+                }
+
+                {this.state.Vis == 3 &&
+                    <div style={{ flex: 1, width: this.state.windowWidth, height: this.state.windowHeight, overflow: "hidden" }}>
+                        <ComparisonView
+                            userType="this.state.userType"
+                            play={true}
+                            RouteIds={this.state.selected}
+                        />
+                    </div>}
+
+
+
+                {this.state.Vis == 4 &&
                     // heatmap
                     <div>
                         <HeatMap />
@@ -114,16 +135,16 @@ class Visualizations extends React.Component {
                             userType={this.state.userType} />
                     </div>}
 
-                {this.state.Vis == 3 &&
+                {this.state.Vis == 5 &&
 
                     <div>
-                           <Controller
+                        <Controller
                             play={this.state.play}
                             onPlayChange={this.handlePlayChange}
                             selected={this.state.selected}
                             onSelectedChange={this.onSelectedValueChange}
                         />
-                        
+
                         <ManuelTrajectoryPlot
                             play={this.state.play}
                             RouteIds={this.state.selected}
@@ -131,14 +152,9 @@ class Visualizations extends React.Component {
                     </div>
 
                 }
-                {
-                this.state.Vis == 4 &&
-                <div>
-                    <RefillStateGraph 
-                    userType="this.state.userType"
-                    />
-                </div>
-                }
+
+
+
 
             </div>
         );
