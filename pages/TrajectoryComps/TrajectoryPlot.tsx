@@ -42,7 +42,7 @@ async function getCords(RouteId: number) {
     // svg.selectAll("path.route").remove();
     svg
       .selectAll("path.route"+RouteId)
-      .data([data])
+      .data([data.sort((a: any, b: any) => a.order - b.order)])
       .enter()
       .append("path")
       .attr("class", "route"+RouteId)
