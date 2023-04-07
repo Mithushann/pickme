@@ -1,6 +1,24 @@
 
 import React from "react";
 import axios from "axios";
+import jsonParser from '@/util/JsonParser';
+
+async function getLayout() {
+  let data = null;
+  const url = 'http://localhost:3333/api/get3d';
+  await fetch(url)
+    .then((response) => response.json())
+    .then((d) => {
+      data = jsonParser(d[0]);
+      // print(data)
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+
+  return data;
+}
+
 
  async function getAllCords(){
     try {
@@ -27,7 +45,7 @@ import axios from "axios";
     }
   }
 
-  async function getDataFromOptiplanWarehouse(optimizationId="cle41z5es815906mgsx34ry3v") {
+  async function getDataFromOptiplanWarehouse(optimizationId="clfth396f84847606p7ox1fi3l4") {//cle41z5es815906mgsx34ry3v
     try {
     const query= `{
       optimization(optimizationId: "${optimizationId}") {
@@ -61,5 +79,5 @@ import axios from "axios";
     }
   }
 
-    export {getAllCords, getCords, getDataFromOptiplanWarehouse};
+    export {getLayout, getAllCords, getCords, getDataFromOptiplanWarehouse};
   

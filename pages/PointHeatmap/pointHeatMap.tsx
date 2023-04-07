@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import Layout from '../components/Layout';
 import print from 'util/print';
 import axios from 'axios';
-import { getCords, getDataFromOptiplanWarehouse } from '../api/getData';
+import { getCords, getDataFromOptiplanWarehouse, getLayout } from '../api/getData';
 
 function interpolateColor(color1: number[], color2: number[], factor: number): number[] {
   const result = [];
@@ -13,17 +13,17 @@ function interpolateColor(color1: number[], color2: number[], factor: number): n
   return result;
 }
 
-function color(){
-const blue = [0, 0, 255]; // RGB value of blue
-const red = [255, 0, 0]; // RGB value of red
+function color() {
+  const blue = [0, 0, 255]; // RGB value of blue
+  const red = [255, 0, 0]; // RGB value of red
 
-const colorScale = [];
-for (let i = 0; i < 10; i++) {
-  const factor = i / 5; // factor ranges from 0 to 1
-  const color = interpolateColor(blue, red, factor);
-  colorScale.push(color);
-}
-return colorScale;
+  const colorScale = [];
+  for (let i = 0; i < 10; i++) {
+    const factor = i / 5; // factor ranges from 0 to 1
+    const color = interpolateColor(blue, red, factor);
+    colorScale.push(color);
+  }
+  return colorScale;
 }
 
 function Tooltip(svg, x, y, content, windowWidth, windowHeight) {
@@ -50,8 +50,6 @@ function Tooltip(svg, x, y, content, windowWidth, windowHeight) {
 
 }
 
-
-
 async function getAllCords() {
   try {
     const response = await axios.get("http://localhost:3333/api/getAll");
@@ -68,12 +66,44 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
   const height = window.innerHeight - 4;
 
   const svg = d3.select(svgRef.current);
+  let AisleMap = new Map<String, number>()
+  const xScale = d3.scaleLinear().domain([0, 1]).range([0, width]);
+  const yScale = d3.scaleLinear().domain([0, 1]).range([0, height]);
+
 
   getDataFromOptiplanWarehouse().then((data) => {
-    print(data);
+    data.map((routes: any[]) => {
+      routes.routeStops.map((pickUp: any) => {
+        let keyString = String(pickUp.aisle.orgAisleId)
+        let count = AisleMap.get(keyString) || 0; // if key doesn't exist, default count to 0
+        AisleMap.set(keyString, count + 1)
+      });
+    });
+
+    // Iterate over the entries in AisleMap and print each key-value pair
+    for (let [key, value] of AisleMap.entries()) {
+      // console.log(`Aisle ${key}: ${value} pickups`);
+    }
+  });
+
+  getLayout().then((data) => {
+    print(data.Aisle)
+    svg
+      .selectAll("AisleHeatMap")
+      .attr("class", "AisleHeatMap")
+      .data(data.Aisle)
+      .enter()
+      .append("rect")
+      .attr("x", (d: any) => xScale(d[0]))
+      .attr("y", (d: any) => height - yScale((d[1] + d[3])))
+      .attr("width", (d: any) => xScale(d[2]))
+      .attr("height", (d: any) => yScale(d[3]))
+      .attr("fill", "blue")
+      .attr("opacity", .75)
   });
 
   getAllCords().then((dataAll) => {
+    // console.log(dataAll)
 
     const xExtent = d3.extent(dataAll, (d) => d.Xcorrdinate);
     const yExtent = d3.extent(dataAll, (d) => d.Ycorrdinate);
@@ -87,6 +117,7 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
     const yScale = d3.scaleLinear().domain([ymin - 1.5, ymax + 1.5]).range([0, height]);
 
     let uniqueVec: number[][] = []
+
     let NodeIdMap = new Map<String, number>()
 
     // create an array of objects with unique x and y properties
@@ -118,11 +149,11 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
 
     });
     //--------------------------------------------------------------------------------
-    color().map((d, i) => { 
+    color().map((d, i) => {
       svg.append("circle")
         .attr("cx", 10)
         .attr("cy", 10 + (i * 20))
-        .attr("r", i+1)
+        .attr("r", i + 1)
         .attr("fill", `rgb(${d[0]},${d[1]},${d[2]})`)
         .attr("opacity", .75)
 
@@ -139,7 +170,7 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
     dataAll.forEach((d: any) => {
       if (d.Nodetype == "PICKUP") {
         // find the max value of the data and min value of the data
-        
+
         let keyString = String(d.NodeId.split("-")[0]) + String(d.NodeId.split("-")[1])
         let num = NodeIdMap.get(keyString)
         if (num > max) {
@@ -147,61 +178,61 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
         }
         if (num < min) {
           min = num
-        } 
+        }
 
         svg.append("circle")
           .attr("cx", xScale(d.Xcorrdinate))
           .attr("cy", height - yScale(d.Ycorrdinate))
-          .attr("r", ()=>{
+          .attr("r", () => {
             let keyString = String(d.NodeId.split("-")[0]) + String(d.NodeId.split("-")[1])
             return (NodeIdMap.get(keyString))
           })
-          .attr("fill", ()=>{
+          .attr("fill", () => {
             let keyString = String(d.NodeId.split("-")[0]) + String(d.NodeId.split("-")[1])
             let c = color()
-             
-            if(NodeIdMap.get(keyString)==1){
+
+            if (NodeIdMap.get(keyString) == 1) {
               let d = c[0]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
-            else if(NodeIdMap.get(keyString)==2){
+            else if (NodeIdMap.get(keyString) == 2) {
               let d = c[1]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
-            else if(NodeIdMap.get(keyString)==3){
+            else if (NodeIdMap.get(keyString) == 3) {
               let d = c[2]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
-            else if(NodeIdMap.get(keyString)==4){
+            else if (NodeIdMap.get(keyString) == 4) {
               let d = c[3]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
-            else if(NodeIdMap.get(keyString)==5){
+            else if (NodeIdMap.get(keyString) == 5) {
               let d = c[4]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
-            else if(NodeIdMap.get(keyString)==6){
+            else if (NodeIdMap.get(keyString) == 6) {
               let d = c[5]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
-            else if(NodeIdMap.get(keyString)==7){
+            else if (NodeIdMap.get(keyString) == 7) {
               let d = c[6]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
-            else if(NodeIdMap.get(keyString)==8){
+            else if (NodeIdMap.get(keyString) == 8) {
               let d = c[7]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
-            else if(NodeIdMap.get(keyString)==9){
+            else if (NodeIdMap.get(keyString) == 9) {
               let d = c[8]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
-            else if(NodeIdMap.get(keyString)==10){
+            else if (NodeIdMap.get(keyString) == 10) {
               let d = c[9]
               return `rgb(${d[0]},${d[1]},${d[2]})`
             }
             else return "yellow"
-            
+
           })
           .attr("transparency", ".1")
           // Our hover effects for the crossAisle

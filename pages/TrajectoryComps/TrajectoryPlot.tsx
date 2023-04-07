@@ -1,10 +1,5 @@
 import * as React from "react";
-import * as d3 from "d3";
-import axios from "axios";
 import Layout from "../components/Layout";
-import print from 'util/print';
-import { getAllCords, getCords } from "pages/api/getData";
-import drawOnePath from "../components/DrawOnePath";
 import Chart from "../components/Chart";
 
 // A function to get all route data from the api (getAllCords())

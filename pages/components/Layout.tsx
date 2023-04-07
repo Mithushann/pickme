@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as d3 from "d3";
-import jsonParser from '@/util/JsonParser';
 import { svg } from "d3";
 import print from 'util/print';
 import colors from "@/util/Constants";
+import { getLayout, getDataFromOptiplanWarehouse} from "../api/getData";
+import {getLayoutOW} from "../api/getLayout";
 
 function Tooltip(svg, x, y, content, windowWidth, windowHeight) {
 
@@ -27,22 +28,6 @@ function Tooltip(svg, x, y, content, windowWidth, windowHeight) {
     .attr("font-size", 20)
     .attr("fill", "black")
 
-}
-
-async function getLayout() {
-  let data = null;
-  const url = 'http://localhost:3333/api/get3d';
-  await fetch(url)
-    .then((response) => response.json())
-    .then((d) => {
-      data = jsonParser(d[0]);
-      // print(data)
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
-
-  return data;
 }
 
 // A function to draw the svg element given data and a ref to the svg element
@@ -131,8 +116,6 @@ export default function Layout(svgRef: React.RefObject<SVGSVGElement>, userType:
     height = window.innerHeight-4;
     }
 
-   
-
     // normalize the data to fit the svg element
     const xScale = d3.scaleLinear().domain([0, 1]).range([0, width]);
     const yScale = d3.scaleLinear().domain([0, 1]).range([0, height]);
@@ -163,4 +146,5 @@ export default function Layout(svgRef: React.RefObject<SVGSVGElement>, userType:
 
     d3.selectAll('rect').lower()
   });
+
 }
