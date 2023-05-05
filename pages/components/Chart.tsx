@@ -15,7 +15,7 @@ export default async function Chart(svgRef: React.RefObject<SVGSVGElement>, Rout
   
       // normalize the data to fit the svg element
       const xScale = d3.scaleLinear().domain([xmin, xmax + 11]).range([0, width]); //here
-      const yScale = d3.scaleLinear().domain([ymin, ymax]).range([0, height]);
+      const yScale = d3.scaleLinear().domain([ymin, ymax]).range([height, 0]);
   
       // create the svg element
       const svg = d3.select(svgRef.current)
@@ -29,6 +29,7 @@ export default async function Chart(svgRef: React.RefObject<SVGSVGElement>, Rout
         print("RouteIds", String(RouteIds[i]))
         
       }
+
     }
     else {
       const svg = d3.select(svgRef.current);

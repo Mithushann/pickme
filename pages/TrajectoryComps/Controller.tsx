@@ -13,6 +13,7 @@ const Player = (props) => {
     const nodeRef = React.useRef(null);
 
     return (
+        <React.StrictMode>
         <Draggable nodeRef={nodeRef} bounds='parent'>
             <div ref={nodeRef} className="player-container">
                         {props.play ?
@@ -40,6 +41,7 @@ const Player = (props) => {
                         onSelectedChange={props.onSelectedChange}
                     /> */}
         </Draggable>
+        </React.StrictMode>
     );
 };
 

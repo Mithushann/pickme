@@ -9,7 +9,6 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import print from '@/util/print';
 import axios from 'axios';
-import  getDropDownElements  from '@/pages/api/getDropDownElements';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -22,6 +21,23 @@ const MenuProps = {
     },
 };
 
+async function getDropDownElements(){
+    try {
+        const start = new Date().getTime();
+        const response = await axios.get("http://localhost:3333/api/getAll");
+        let elapsed = new Date().getTime() - start;
+        
+        print("getDropDownElements: " + Math.ceil(elapsed/1000) + "s");
+
+        const Data = response.data;
+        const RouteIdList = Data.map((d: any) => d.RouteId);
+        const uniqueRouteIdList = [...new Set(RouteIdList)];//remove duplicates
+        return uniqueRouteIdList;
+    }
+    catch (error) {
+        print(error);
+    }
+}
 
 function getStyles(option: string, selectedRoutes: readonly string[], theme: Theme) {
     return {
@@ -79,11 +95,11 @@ export default function MultipleSelectChip(props) {
                 >
                     {DropDownOptions.map((option) => (
                         <MenuItem
-                            key={option.number}
-                            value={option.number}
-                            style={getStyles(String(option.number), selectedRoutes, theme)}
+                            key={option}
+                            value={option}
+                            style={getStyles(String(option), selectedRoutes, theme)}
                         >
-                            {option.number}
+                            {option}
                         </MenuItem>
                     ))}
                 </Select>
@@ -93,21 +109,3 @@ export default function MultipleSelectChip(props) {
 }
 
 
-
-// async function getDropDownElements(){
-//     try {
-//         const start = new Date().getTime();
-//         const response = await axios.get("http://localhost:3333/api/getAll");
-//         let elapsed = new Date().getTime() - start;
-        
-//         print("getDropDownElements: " + Math.ceil(elapsed/1000) + "s");
-
-//         const Data = response.data;
-//         const RouteIdList = Data.map((d: any) => d.RouteId);
-//         const uniqueRouteIdList = [...new Set(RouteIdList)];//remove duplicates
-//         return uniqueRouteIdList;
-//     }
-//     catch (error) {
-//         print(error);
-//     }
-// }

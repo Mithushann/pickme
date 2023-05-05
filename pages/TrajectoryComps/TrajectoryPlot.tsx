@@ -11,7 +11,7 @@ const TrajectoryPlot = (props: { play: boolean; RouteIds: number[]; userType: st
 
   React.useEffect(() => {
     Layout(svg, props.userType);
-    Chart(svg, props.RouteIds, props.play, true);
+    Chart(svg, props.RouteIds, props.play, true); // Last parameter is for isStatic= true, Other wise it will draw the animation 
   }, [svg, props.play, props.RouteIds, props.userType]);
 
   return (

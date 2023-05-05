@@ -3,28 +3,10 @@ import * as d3 from 'd3';
 import Layout from '../components/Layout';
 import print from 'util/print';
 import axios from 'axios';
-import { getCords, getDataFromOptiplanWarehouse, getLayout } from '../api/getData';
-
-function interpolateColor(color1: number[], color2: number[], factor: number): number[] {
-  const result = [];
-  for (let i = 0; i < color1.length; i++) {
-    result[i] = Math.round(color1[i] + (color2[i] - color1[i]) * factor);
-  }
-  return result;
-}
-
-function color() {
-  const blue = [0, 0, 255]; // RGB value of blue
-  const red = [255, 0, 0]; // RGB value of red
-
-  const colorScale = [];
-  for (let i = 0; i < 10; i++) {
-    const factor = i / 5; // factor ranges from 0 to 1
-    const color = interpolateColor(blue, red, factor);
-    colorScale.push(color);
-  }
-  return colorScale;
-}
+import { getCords, getAllCords, getDataFromOptiplanWarehouse, getLayout } from '../api/getData';
+import { getLayoutAisle } from '../api/getLayout';
+import { color } from 'util/Colors';
+import Legend from './legend';
 
 function Tooltip(svg, x, y, content, windowWidth, windowHeight) {
 
@@ -50,215 +32,195 @@ function Tooltip(svg, x, y, content, windowWidth, windowHeight) {
 
 }
 
-async function getAllCords() {
-  try {
-    const response = await axios.get("http://localhost:3333/api/getAll");
-    const Data = response.data;
-    return Data;
-  }
-  catch (error) {
-    console.log(error);
-  }
-}
-
 function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
   const width = window.innerWidth;
-  const height = window.innerHeight - 4;
+  const height = window.innerHeight;
 
   const svg = d3.select(svgRef.current);
-  let AisleMap = new Map<String, number>()
-  const xScale = d3.scaleLinear().domain([0, 1]).range([0, width]);
-  const yScale = d3.scaleLinear().domain([0, 1]).range([0, height]);
 
+  getAllCords().then((Routes) => {
+    Routes.sort((a: any, b: any) => { return a.number - b.number })
 
-  getDataFromOptiplanWarehouse().then((data) => {
-    data.map((routes: any[]) => {
-      routes.routeStops.map((pickUp: any) => {
-        let keyString = String(pickUp.aisle.orgAisleId)
-        let count = AisleMap.get(keyString) || 0; // if key doesn't exist, default count to 0
-        AisleMap.set(keyString, count + 1)
-      });
-    });
+    let xmin = Infinity; let xmax = -Infinity; let ymin = Infinity; let ymax = -Infinity
 
-    // Iterate over the entries in AisleMap and print each key-value pair
-    for (let [key, value] of AisleMap.entries()) {
-      // console.log(`Aisle ${key}: ${value} pickups`);
-    }
-  });
-
-  getLayout().then((data) => {
-    print(data.Aisle)
-    svg
-      .selectAll("AisleHeatMap")
-      .attr("class", "AisleHeatMap")
-      .data(data.Aisle)
-      .enter()
-      .append("rect")
-      .attr("x", (d: any) => xScale(d[0]))
-      .attr("y", (d: any) => height - yScale((d[1] + d[3])))
-      .attr("width", (d: any) => xScale(d[2]))
-      .attr("height", (d: any) => yScale(d[3]))
-      .attr("fill", "blue")
-      .attr("opacity", .75)
-  });
-
-  getAllCords().then((dataAll) => {
-    // console.log(dataAll)
-
-    const xExtent = d3.extent(dataAll, (d) => d.Xcorrdinate);
-    const yExtent = d3.extent(dataAll, (d) => d.Ycorrdinate);
-    const xmin = Number(xExtent[0]) //-74
-    const xmax = Number(xExtent[1]) //37.5 
-    const ymin = Number(yExtent[0]) //-40 
-    const ymax = Number(yExtent[1]) //39.5 //here this need to be replaced the actual max value of the data
+    Routes.map((d: any) => {
+      d.routeStops.map((d: any) => {
+        if (d.shelf.xCoor < xmin) xmin = d.shelf.xCoor
+        if (d.shelf.xCoor > xmax) xmax = d.shelf.xCoor
+        if (d.shelf.yCoor < ymin) ymin = d.shelf.yCoor
+        if (d.shelf.yCoor > ymax) ymax = d.shelf.yCoor
+      })
+    })
 
     // normalize the data to fit the svg element
-    const xScale = d3.scaleLinear().domain([xmin - 2, xmax + 12]).range([0, width]); //here
-    const yScale = d3.scaleLinear().domain([ymin - 1.5, ymax + 1.5]).range([0, height]);
+    const xScale = d3.scaleLinear().domain([xmin - 2000, xmax + 12000]).range([0, width]); //here
+    const yScale = d3.scaleLinear().domain([ymin - 1500, ymax + 1500]).range([height, 0]); //here
 
-    let uniqueVec: number[][] = []
+    let ShelfMap = new Map<String, number>()
+    let AisleMap = new Map<String, number>()
 
-    let NodeIdMap = new Map<String, number>()
+    let colorScale = color()
+
 
     // create an array of objects with unique x and y properties
-    dataAll.map((d: any) => {
-      let keyString = String(d.NodeId.split("-")[0]) + String(d.NodeId.split("-")[1])
-      if (d.Nodetype == "PICKUP" && uniqueVec.length == 0) {
-        uniqueVec.push([d.Xcorrdinate, d.Ycorrdinate])
-        NodeIdMap.set(keyString, 1)
-      }
-      else if (d.Nodetype == "PICKUP" && uniqueVec.length > 0) {
-        let isDuplicate = false
-
-        for (let i = 0; i < uniqueVec.length; i++) {
-          if (uniqueVec[i][0] == d.Xcorrdinate && uniqueVec[i][1] == d.Ycorrdinate) {
-            isDuplicate = true
-          }
-        }
-        if (!isDuplicate) {
-          uniqueVec.push([d.Xcorrdinate, d.Ycorrdinate])
-          NodeIdMap.set(keyString, 1)
-        }
+    Routes.map((route: any) => {
+      route.routeStops.map((d: any) => {
+        let shelfKey = String(d.shelf.orgShelfId)
+        let aisleKey = String(d.aisle.orgAisleId)
+    
+        if (!ShelfMap.has(shelfKey)) {
+          ShelfMap.set(shelfKey, 1)
+        } 
         else {
-          let count = NodeIdMap.get(keyString)
-          NodeIdMap.set(keyString, count + 1)
+          ShelfMap.set(shelfKey, ShelfMap.get(shelfKey) + 1)
         }
-      }
-
-      return uniqueVec
-
-    });
-    //--------------------------------------------------------------------------------
-    color().map((d, i) => {
-      svg.append("circle")
-        .attr("cx", 10)
-        .attr("cy", 10 + (i * 20))
-        .attr("r", i + 1)
-        .attr("fill", `rgb(${d[0]},${d[1]},${d[2]})`)
-        .attr("opacity", .75)
-
-      svg.append("text")
-        .attr("x", 30)
-        .attr("y", 10 + (i * 20) + 5)
-        .text(i + 1)
-        .attr("font-size", 20)
-        .attr("fill", "black")
-    })
-    //--------------------------------------------------------------------------------
-    let max = 0
-    let min = 1000000000
-    dataAll.forEach((d: any) => {
-      if (d.Nodetype == "PICKUP") {
-        // find the max value of the data and min value of the data
-
-        let keyString = String(d.NodeId.split("-")[0]) + String(d.NodeId.split("-")[1])
-        let num = NodeIdMap.get(keyString)
-        if (num > max) {
-          max = num
-        }
-        if (num < min) {
-          min = num
+    
+        if (!AisleMap.has(aisleKey)) {
+          AisleMap.set(aisleKey, 1)
+        } else {
+          AisleMap.set(aisleKey, AisleMap.get(aisleKey) + 1)
         }
 
+        // append legend to the svg element (circle)
+        
         svg.append("circle")
-          .attr("cx", xScale(d.Xcorrdinate))
-          .attr("cy", height - yScale(d.Ycorrdinate))
-          .attr("r", () => {
-            let keyString = String(d.NodeId.split("-")[0]) + String(d.NodeId.split("-")[1])
-            return (NodeIdMap.get(keyString))
-          })
+          .attr("cx", xScale(d.shelf.xCoor))
+    
+        svg.append("circle")
+          .attr("cx", xScale(d.shelf.xCoor))
+          .attr("cy", yScale(d.shelf.yCoor))
+          .attr("r", ShelfMap.get(shelfKey))
           .attr("fill", () => {
-            let keyString = String(d.NodeId.split("-")[0]) + String(d.NodeId.split("-")[1])
-            let c = color()
-
-            if (NodeIdMap.get(keyString) == 1) {
-              let d = c[0]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else if (NodeIdMap.get(keyString) == 2) {
-              let d = c[1]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else if (NodeIdMap.get(keyString) == 3) {
-              let d = c[2]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else if (NodeIdMap.get(keyString) == 4) {
-              let d = c[3]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else if (NodeIdMap.get(keyString) == 5) {
-              let d = c[4]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else if (NodeIdMap.get(keyString) == 6) {
-              let d = c[5]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else if (NodeIdMap.get(keyString) == 7) {
-              let d = c[6]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else if (NodeIdMap.get(keyString) == 8) {
-              let d = c[7]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else if (NodeIdMap.get(keyString) == 9) {
-              let d = c[8]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else if (NodeIdMap.get(keyString) == 10) {
-              let d = c[9]
-              return `rgb(${d[0]},${d[1]},${d[2]})`
-            }
-            else return "yellow"
-
+            let color = colorScale[Math.floor(ShelfMap.get(shelfKey) % 10)]
+            return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+          }
+          )
+          .attr("opacity", .5)
+          .on("mouseover", function () {
+            d3.select(this).attr("fill", "red")
+            Tooltip(svg, xScale(d.shelf.xCoor), yScale(d.shelf.yCoor), shelfKey, width, height)
           })
-          .attr("transparency", ".1")
-          // Our hover effects for the crossAisle
-          .on('mouseover', function (event, d1) {
-            d3.select(this).transition().duration('50').attr('opacity', '.5')
-            let content = "X: " + d.Xcorrdinate + " Y: " + d.Ycorrdinate;
-            let content1 = d.NodeId
-            Tooltip(svg, d3.pointer(event)[0], d3.pointer(event)[1], content1, width, height)
+          .on("mouseout", function () {
+            d3.select(this).attr("fill", "black")
+            d3.select("#tooltip_circle_t").remove()
+            d3.select("#tooltip_circle_text_t").remove()
           })
 
-          .on('mouseout', function (d, i) {
-            d3.select(this).transition().duration('50').attr('opacity', '1')
-            svg.select("#tooltip_circle_t").remove();
-            svg.select("#tooltip_circle_text_t").remove();
-          });
-      }
-    })
-  })
-    .catch((error) => {
-      console.log(error);
     });
+  });
+
+    // draw a box for each aisle
+    //0- up
+    //1- down
+    //2- Mainly horizzontal both left and right
+    getLayoutAisle().then((layout) => {
+      layout.aisles.map((d: any) => {
+        //append a line to the svg element
+        if (d.position === 0) { // horizontal
+          svg.append("line")
+            .attr("x1", xScale(d.frontEndX))
+            .attr("y1", yScale(d.frontEndY))
+            .attr("x2", xScale((d.frontEndX + d.tailEndX) / 2)-5)
+            .attr("y2", yScale(((d.tailEndY + d.frontEndY) / 2)))
+            .attr("stroke", () => {
+              let key = String(d.orgAisleId)
+              if(AisleMap.has(key)){
+              let color = colorScale[Math.ceil(AisleMap.get(key) / 10)]
+              return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+              }
+              else{
+                return "black"
+              }
+            }
+            )
+            .attr("stroke-width", Math.floor(AisleMap.get(d.orgAisleId)/10))
+
+            svg.append("line")
+            .attr("x1", xScale(d.tailEndX))
+            .attr("y1", yScale(d.tailEndY))
+            .attr("x2", xScale((d.frontEndX + d.tailEndX) / 2)+25)
+            .attr("y2", yScale(((d.tailEndY + d.frontEndY) / 2)))
+            .attr("stroke", () => {
+              let key = String(d.orgAisleId)
+              if(AisleMap.has(key)){
+              let color = colorScale[Math.ceil(AisleMap.get(key) / 10)]
+              return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+              }
+              else{
+                return "black"
+              }
+            }
+            )
+            .attr("stroke-width", Math.ceil(AisleMap.get(d.orgAisleId)/10))
+        }
+        else if (d.position === 1) { // vertival
+          svg.append("line")
+            .attr("x1", xScale(d.frontEndX))
+            .attr("y1", yScale(d.frontEndY))
+            .attr("x2", xScale((d.frontEndX + d.tailEndX) / 2))
+            .attr("y2", yScale(((d.tailEndY + d.frontEndY) / 2))+10)
+            .attr("stroke", () => {
+              let key = String(d.orgAisleId)
+              if(AisleMap.has(key)){
+              let color = colorScale[Math.ceil(AisleMap.get(key) / 10)]
+              return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+              }
+              else{
+                return "black"
+              }
+            }
+            )
+            .attr("stroke-width", Math.floor(AisleMap.get(d.orgAisleId)/10)) // stroke width range 1-10
+
+            svg.append("line")
+            .attr("x1", xScale(d.tailEndX))
+            .attr("y1", yScale(d.tailEndY))
+            .attr("x2", xScale((d.frontEndX + d.tailEndX) / 2))
+            .attr("y2", yScale(((d.tailEndY + d.frontEndY) / 2))-10)
+            .attr("stroke", () => {
+              let key = String(d.orgAisleId)
+              if(AisleMap.has(key)){
+              let color = colorScale[Math.ceil(AisleMap.get(key) / 10)]
+              return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+              }
+              else{
+                return "black"
+              }
+            }
+            )
+            .attr("stroke-width", Math.floor(AisleMap.get(d.orgAisleId)/10))
+        }
+
+
+
+        // add text to the aisle
+        if (d.position === 1) {
+          svg.append("text")
+            .attr("x", xScale(d.frontEndX - 500))
+            .attr("y", yScale((d.tailEndY + d.frontEndY) / 2))
+            .attr("font-size", 10)
+            .attr("fill", "black")
+            .text(d.orgAisleId )
+        }
+        else if (d.position === 0) {
+          svg.append("text")
+            .attr("x", xScale((d.tailEndX + d.frontEndX) / 2))
+            .attr("y", yScale(d.tailEndY))
+            .attr("font-size", 10)
+            .attr("fill", "black")
+            .text(d.orgAisleId )
+        }
+
+      }
+      )
+    })
+  });
+
 
 }
-
 const PointHeatmap = (props: { userType: string }) => {
   const svg = React.useRef<SVGSVGElement>(null);
+
 
   React.useEffect(() => {
     Layout(svg, props.userType);
@@ -266,7 +228,8 @@ const PointHeatmap = (props: { userType: string }) => {
   }, [svg, props.userType]);
 
   return (
-    <div id="Heat">
+    <div id="PointHeat">
+      <Legend/>
       <svg ref={svg} />
     </div>
   );

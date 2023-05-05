@@ -20,7 +20,7 @@ class Visualizations extends React.Component {
             selected: [],
             play: false,
             userType: "",
-            Vis: 0,
+            Vis: 0, //default view
             windowWidth: 0,
             windowHeight: 0,
         };
@@ -63,8 +63,6 @@ class Visualizations extends React.Component {
             windowHeight: window.innerHeight
         });
     };
-
-
 
     render() {
         return (
@@ -117,9 +115,12 @@ class Visualizations extends React.Component {
                 {this.state.Vis == 3 &&
                     <div style={{ flex: 1, width: this.state.windowWidth, height: this.state.windowHeight, overflow: "hidden" }}>
                         <ComparisonView
-                            userType="this.state.userType"
+                            userType={this.state.userType}
                             play={true}
                             RouteIds={this.state.selected}
+                            width={this.state.windowWidth}
+                            height={this.state.windowHeight}
+                            
                         />
                     </div>}
 
@@ -150,12 +151,7 @@ class Visualizations extends React.Component {
                             RouteIds={this.state.selected}
                             userType={this.state.userType} />
                     </div>
-
                 }
-
-
-
-
             </div>
         );
     }
