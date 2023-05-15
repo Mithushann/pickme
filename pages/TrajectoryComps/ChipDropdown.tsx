@@ -50,6 +50,7 @@ export default function MultipleSelectChip(props) {
         const {
             target: { value },
         } = event;
+        
         setSelectedRoutes(
             // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
