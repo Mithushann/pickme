@@ -18,14 +18,14 @@ class Visualizations extends React.Component {
         // There is two types of user 1) customer 2)employee
         this.state = {
             selected: [],
-            play: true,
+            play: false,
             userType: "",
             Vis: 0, //default view
             windowWidth: 0,
             windowHeight: 0,
         };
         // this.handleSelectedChange = this.handleSelectedChange.bind(this);
-        // this.handlePlayChange = this.handlePlayChange.bind(this);
+        this.handlePlayChange = this.handlePlayChange.bind(this);
         this.onSelectedValueChange = this.onSelectedValueChange.bind(this);
         this.onSelectedVizChange = this.onSelectedVizChange.bind(this);
         this.handleUserChange = this.handleUserChange.bind(this);
@@ -36,11 +36,10 @@ class Visualizations extends React.Component {
     // }
     onSelectedValueChange = (values: Number[]) => {
         this.setState({ selected: values });
-        // this.handlePlayChange(true)
     }
-    // handlePlayChange(play: boolean) {
-    //     this.setState({ play: play });
-    // }
+    handlePlayChange(play: boolean) {
+        this.setState({ play: play });
+    }
     onSelectedVizChange = (Viss: number) => {
         this.setState({ Vis: Viss });
     }
@@ -82,7 +81,7 @@ class Visualizations extends React.Component {
                     // Trajectory plot
                     <div>
                         <Controller
-                            // play={this.state.play}
+                            play={this.state.play}
                             onPlayChange={this.handlePlayChange}
                             selected={this.state.selected}
                             onSelectedChange={this.onSelectedValueChange}
@@ -90,7 +89,7 @@ class Visualizations extends React.Component {
 
                         <TrjectoryPlot
                             RouteIds={this.state.selected}
-                            // play={this.state.play}
+                            play={this.state.play}
                             userType={this.state.userType} />
                     </div>
                 }
@@ -125,34 +124,6 @@ class Visualizations extends React.Component {
                         />
                     </div>}
 
-
-
-                {this.state.Vis == 4 &&
-                    // heatmap
-                    <div>
-                        <HeatMap />
-                        <TrjectoryPlot
-                            RouteId={this.state.selected}
-                            play={false}
-                            userType={this.state.userType} />
-                    </div>}
-
-                {this.state.Vis == 5 &&
-
-                    <div>
-                        <Controller
-                            play={this.state.play}
-                            onPlayChange={this.handlePlayChange}
-                            selected={this.state.selected}
-                            onSelectedChange={this.onSelectedValueChange}
-                        />
-
-                        <ManuelTrajectoryPlot
-                            play={this.state.play}
-                            RouteIds={this.state.selected}
-                            userType={this.state.userType} />
-                    </div>
-                }
             </div>
         );
     }

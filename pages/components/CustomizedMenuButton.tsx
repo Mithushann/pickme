@@ -112,26 +112,7 @@ export default function CustomizedMenus(props) {
                     disableRipple
                 >
                     Comparison view
-                    {/* Drawable T-Plot */}
-                </MenuItem>
-
-                <MenuItem
-                    onClick={(event) => handleMenuItemClick(event, 4)}
-                    disableRipple
-                >
-                    {/* Refill state graph */}
-                    Heat map
-                </MenuItem>
-
-                <MenuItem
-                    onClick={(event) => handleMenuItemClick(event, 5)}
-                    disableRipple
-                >
-                    Drawable T-Plot
-                    {/* Comparison view */}
-                </MenuItem>
-
-               
+                </MenuItem>            
 
             </StyledMenu>
         </div>

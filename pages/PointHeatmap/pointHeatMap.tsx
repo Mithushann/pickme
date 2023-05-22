@@ -4,7 +4,7 @@ import Layout from '../components/Layout';
 import print from 'util/print';
 import axios from 'axios';
 import { getCords, getAllCords, getDataFromOptiplanWarehouse, getLayout } from '../api/getData';
-import { getLayoutAisle } from '../api/getLayout';
+import { getBoudningBox, getLayoutAisle } from '../api/getLayout';
 import { color } from 'util/Colors';
 import Legend from './legend';
 
@@ -38,19 +38,15 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
 
   const svg = d3.select(svgRef.current);
 
+  getBoudningBox().then((data) => {
+    let box = data.layoutBoundingBox
+    const xmin = box.xMin
+    const xmax = box.xMax
+    const ymin = box.yMin
+    const ymax = box.yMax
+
   getAllCords().then((Routes) => {
     Routes.sort((a: any, b: any) => { return a.number - b.number })
-
-    let xmin = Infinity; let xmax = -Infinity; let ymin = Infinity; let ymax = -Infinity
-
-    Routes.map((d: any) => {
-      d.routeStops.map((d: any) => {
-        if (d.shelf.xCoor < xmin) xmin = d.shelf.xCoor
-        if (d.shelf.xCoor > xmax) xmax = d.shelf.xCoor
-        if (d.shelf.yCoor < ymin) ymin = d.shelf.yCoor
-        if (d.shelf.yCoor > ymax) ymax = d.shelf.yCoor
-      })
-    })
 
     // normalize the data to fit the svg element
     const xScale = d3.scaleLinear().domain([xmin - 2000, xmax + 12000]).range([0, width]); //here
@@ -215,7 +211,7 @@ function PointMap(svgRef: React.RefObject<SVGSVGElement>) {
       )
     })
   });
-
+});
 
 }
 const PointHeatmap = (props: { userType: string }) => {

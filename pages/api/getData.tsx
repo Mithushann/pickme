@@ -3,24 +3,7 @@ import React from "react";
 import axios from "axios";
 import jsonParser from '@/util/JsonParser';
 
-async function getLayout() {
-  let data = null;
-  const url = 'http://localhost:3333/api/get3d';
-  await fetch(url)
-    .then((response) => response.json())
-    .then((d) => {
-      data = jsonParser(d[0]);
-      // print(data)
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
-
-  return data;
-}
-
-
-async function getAllCords(optimizationId: String = "clfth396f84847606p7ox1fi3l4") {
+async function getAllCords(optimizationId: String = "clhqcwryx32723906r0iqsreysv") {
   try {
     // graphql query
     const query = `{
@@ -61,9 +44,7 @@ async function getAllCords(optimizationId: String = "clfth396f84847606p7ox1fi3l4
     const response = await axios.post(url, {
       query: query
     }, { headers: headers });
-
     const Routes = response.data.data.optimization.subGroups[0].solution.routes;
-
     return Routes;
   }
   catch (error) {
@@ -71,21 +52,10 @@ async function getAllCords(optimizationId: String = "clfth396f84847606p7ox1fi3l4
     console.log(error);
   }
 
-
-
-  // try {
-  //   const response = await axios.get("http://localhost:3333/api/getAll");
-  //   const Data = response.data;
-  //   const cords = Data.map((d: any) => [d.Xcorrdinate, d.Ycorrdinate, d.Nodetype]);
-  //   return cords;
-  // }
-  // catch (error) {
-  //   console.log(error);
-  // }
 }
 
 // A function to get the route data (given RouteID) from the api (getCords(RouteId))
-async function getCords(Id: string = "clfth396f84847606p7ox1fi3l4", RouteId: number = 0) {
+async function getCords(Id: string = "clhqcwryx32723906r0iqsreysv", RouteId: number = 0) {
   try {
     // graphql query
     const query = `{
@@ -138,19 +108,7 @@ async function getCords(Id: string = "clfth396f84847606p7ox1fi3l4", RouteId: num
     console.log("Error in api/getData.tsx");
     console.log(error);
   }
-
-  // try {
-  //   const response = await axios.get("http://localhost:3333/api/get/" + RouteId);
-  //   const Data = response.data;
-  //   const cords = Data;
-  //   return cords;
-  // }
-  // catch (error) {
-  //   console.log(error);
-  // }
 }
-
-
 
 async function getDataFromOptiplanWarehouse(optimizationId = "clfth396f84847606p7ox1fi3l4") {//cle41z5es815906mgsx34ry3v
   try {
@@ -244,4 +202,5 @@ async function getDataForComparison(optimizationId: string = "cle4178bc167483306
   }
 }
 
-export { getLayout, getAllCords, getCords, getDataFromOptiplanWarehouse, getDataForComparison };
+export { getAllCords, getCords, getDataFromOptiplanWarehouse, getDataForComparison };
+

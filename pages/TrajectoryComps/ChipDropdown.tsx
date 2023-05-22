@@ -41,7 +41,7 @@ export default function MultipleSelectChip(props) {
     React.useEffect(() => {
         getDropDownElements().then((data) => setDropDownOptions(data));
         props.onSelectedChange(selectedRoutes);
-    }, [selectedRoutes]
+    }, []
     );
 
 

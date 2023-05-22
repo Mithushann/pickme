@@ -2,13 +2,12 @@ import * as d3 from "d3";
 import axios from "axios";
 import print from 'util/print';
 import { getAllCords, getCords } from "pages/api/getData";
-import { Path } from "three";
 
 export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
   null, unknown, null, undefined>, RouteId: number, xScale: d3.ScaleLinear<number, number, never>,
   yScale: d3.ScaleLinear<number, number, never>, width: number, height: number, isStatic: boolean = false) {
 
-  let OptimizationId = "clfth396f84847606p7ox1fi3l4";
+  let OptimizationId = "clhqcwryx32723906r0iqsreysv";
   if (isStatic) {
     getCords(OptimizationId, RouteId).then((data) => {
       let [routeStops, routeTrajectories] = data;
@@ -47,7 +46,6 @@ export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
         .attr("d", d3.line()
           .x((d) => xScale(Number(d.xCoor)))
           .y((d) => yScale(Number(d.yCoor)))
-          .curve(d3.curveCatmullRom.alpha(.1))
         )
         .attr("marker-end", "url(#arrow)");
 
@@ -79,8 +77,6 @@ export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
           .attr("transform", "rotate(" + angle + " " + endPoint.x + " " + endPoint.y + ")");
       });
     });
-
   }
+
 }
-
-

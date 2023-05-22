@@ -4,7 +4,7 @@ import axios from "axios";
 import Layout from "../components/Layout";
 import print from 'util/print';
 import { getAllCords, getCords } from "pages/api/getData";
-import { getLayoutShelf } from "../api/getLayout";
+import { getBoudningBox, getLayoutShelf } from "../api/getLayout";
 import { drawTrafficLight, generateNumber } from "@/util/helperFunc";
 import Draggable from "react-draggable";
 import LegendRefill from "./LegendRefill";
@@ -12,28 +12,16 @@ import LegendRefill from "./LegendRefill";
 
 
 async function RefillChart(svgRef: React.RefObject<SVGSVGElement>, detailSvgRef: React.RefObject<SVGSVGElement>) {
-    getAllCords().then((Routes) => {
-
+    getBoudningBox().then((box) => {
+        let boundingBox = box.layoutBoundingBox
         const width = window.innerWidth;
         const height = window.innerHeight - 4;
-
-        Routes.sort((a: any, b: any) => { return a.number - b.number })
-
-        let xmin = Infinity; let xmax = -Infinity; let ymin = Infinity; let ymax = -Infinity
+        let xmin = boundingBox.xMin; let xmax = boundingBox.xMax; let ymin = boundingBox.yMin; let ymax = boundingBox.yMax;
 
         // Fake data: number of items left on each shelf
         let inventory = new Map<String, number>()
         // let overallInventory = new Map<String, number>()
         let shelfCoordinatesMap = new Map<String, { "xCoor": number, "yCoor": number, "subShelfs": String[] }>()
-
-        Routes.map((d: any) => {
-            d.routeStops.map((d: any) => {
-                if (d.shelf.xCoor < xmin) xmin = d.shelf.xCoor
-                if (d.shelf.xCoor > xmax) xmax = d.shelf.xCoor
-                if (d.shelf.yCoor < ymin) ymin = d.shelf.yCoor
-                if (d.shelf.yCoor > ymax) ymax = d.shelf.yCoor
-            })
-        })
 
         // normalize the data to fit the svg element
         const xScale = d3.scaleLinear().domain([xmin - 2000, xmax + 12000]).range([0, width]); //here
