@@ -24,18 +24,18 @@ class Visualizations extends React.Component {
             windowWidth: 0,
             windowHeight: 0,
         };
-        this.handleSelectedChange = this.handleSelectedChange.bind(this);
+        // this.handleSelectedChange = this.handleSelectedChange.bind(this);
         this.handlePlayChange = this.handlePlayChange.bind(this);
         this.onSelectedValueChange = this.onSelectedValueChange.bind(this);
         this.onSelectedVizChange = this.onSelectedVizChange.bind(this);
         this.handleUserChange = this.handleUserChange.bind(this);
 
     }
-    handleSelectedChange(selected: any) {
-        this.setState({ selected: selected });
-    }
+    // handleSelectedChange(selected: any) {
+    //     this.setState({ selected: selected });
+    // }
     onSelectedValueChange = (values: Number[]) => {
-        console.log("onSelectedValueChange: ", values);
+        // console.log("onSelectedValueChange: ", values);
         this.setState({ selected: values });
     }
     handlePlayChange(play: boolean) {

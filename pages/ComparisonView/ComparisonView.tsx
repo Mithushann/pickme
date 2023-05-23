@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import BarChart from "./Barchart";
 import getDataForComparison from "pages/api/getDataForComparison";
 import drawOnePathComparison from "../components/drawOnePathComparison";
+import { getLayoutShelf } from "../api/getLayout";
 
 interface Props {
   userType: string;
@@ -22,6 +23,9 @@ const ComparisonView: React.FC<Props> = ({
   const svgLeft = React.useRef<SVGSVGElement>(null);
   const svgRight = React.useRef<SVGSVGElement>(null);
 
+  // State variables for ShelfCoordinates 
+  const [shelfCoordinates, setShelfCoordinates] = useState(new Map<string, {xCoor:number, yCoor:number}>());
+
   // State variables for Optiplan
   const [distanceOptiplan, setDistanceOptiplan] = useState<number[]>([]);
   const [totalDistanceOptiplan, setTotalDistanceOptiplan] = useState<number>(0);
@@ -34,11 +38,44 @@ const ComparisonView: React.FC<Props> = ({
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  useEffect(() => {
-    Layout(svgLeft, userType, width / 2, height * (3 / 4));
-    Layout(svgRight, userType, width / 2, height * (3 / 4));
-  }, [userType, width, height]);
+  // Get the shelf coordinates from the database
+  useEffect(() => 
+  {
+    const fetchData = async () =>
+    {
+      try
+      {
+        const shelfCoords = new Map<string, {xCoor:number, yCoor:number}>();
+       getLayoutShelf().then((data) => {
 
+        data.shelves.map((element: { orgShelfId: string; xCoor: any; yCoor: any; }) =>{
+          let key = String(element.orgShelfId).split("-")[0] + "-" + String(element.orgShelfId).split("-")[1];
+          if(!shelfCoords.has(key)){
+          shelfCoords.set(key, {xCoor: element.xCoor, yCoor: element.yCoor});
+          }
+        });
+      });
+        // console.log("ShelfCoords: ", shelfCoords);
+        setShelfCoordinates(shelfCoords);
+      }
+      catch (error)
+      {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+  //-------------------------------------------------------------------------------------------------------------
+
+
+//draw the layout
+  useEffect(() => {
+    Layout(svgLeft, userType, width / 2, height * (3 / 4), false);
+    Layout(svgRight, userType, width / 2, height * (3 / 4), false);
+  }, [userType, width, height]);
+//-------------------------------------------------------------------------------------------------------------
+
+// Get the data for barchart and the shelfId for the routes from the database
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,6 +110,26 @@ const ComparisonView: React.FC<Props> = ({
 
     fetchData();
   }, []);
+  //-------------------------------------------------------------------------------------------------------------
+
+  //Draw the routes on the layout
+  // Optiplan routes
+  React.useEffect(() => {
+    if (routesOptiplan.length == 0) return;
+    
+    drawOnePathComparison(svgLeft, routesOptiplan, shelfCoordinates, width / 2, height * (3 / 4));
+  
+  }, [routesOptiplan]);
+
+  // Customer routes
+  React.useEffect(() => {
+    if (routesCustomer.length == 0) return;
+    
+    drawOnePathComparison(svgRight, routesCustomer, shelfCoordinates, width / 2, height * (3 / 4));
+   
+  }, [routesCustomer]);
+
+//-------------------------------------------------------------------------------------------------------------
 
   return (
     <div className="cv-container">
@@ -127,7 +184,7 @@ export default ComparisonView;
 //   play: boolean;
 //   width: number;
 //   height: number;
-// }  
+// }
 // const ComparisonView: React.FC<Props> = ({
 //   userType,
 //   RouteIds,
@@ -161,7 +218,7 @@ export default ComparisonView;
 //   }, [userType, width, height]);
 
 //   React.useEffect(() => {
-//     // Optiplan 
+//     // Optiplan
 //     let optiplanDistance: number[] = [];
 //     let vectorOptiplan: { id: any; distance: any; routeStops: any; start: any; finish: any; }[] = [];
 //     getDataForComparison().then((dataOptiplan) => {

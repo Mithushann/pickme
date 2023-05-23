@@ -12,7 +12,7 @@ async function drawWithDelay(svg: any, data: any, xScale: any, yScale: any) {
     for (let i = 0; i < data.length; i++) {
 
         let routeTrajectories = data[i].routeTrajectories;
-        let timeForEachRoute = data[i].finishTime*10;
+        let timeForEachRoute = data[i].finishTime * 10;
 
         const colors = ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231"];
 
@@ -61,27 +61,109 @@ async function drawWithDelay(svg: any, data: any, xScale: any, yScale: any) {
     }
 }
 
+// async function draw(svg: any, data: any, shelves:any, xScale: any, yScale: any) {
+//     if (data.length === 0 || shelves.size === 0) {
+//         return;
+//     }
+    
+//     console.log("------------------")
+//     data.map((element: { shelfId: string; }, index: number) => {
+//         let key = element.shelfId.split("-")[0]+"-"+element.shelfId.split("-")[1]
+//         let shelf = shelves.get(key)
+
+//         // add circle for each shelf
+
+//         svg.selectAll(".routeCircle") // Update the selection to include a dot before the class name
+//         .data([shelf]) // Use the data for binding
+//         .enter() // Enter the data selection
+//         .append("circle") // Append a circle for each data point
+//         .attr("class", "routeCircle")
+//         .attr("cx", xScale(shelf.xCoor))
+//         .attr("cy", yScale(shelf.yCoor))
+//         .attr("r", 5)
+//         .style("fill", "red")
+//         .style("stroke", "black")
+//         .style("stroke-width", 1);
+
+//         // add text for each shelf
+//         svg.append("text")
+//             .attr("x", xScale(shelf.xCoor))
+//             .attr("y", yScale(shelf.yCoor))
+//             .text(index+1)
+//             .style("font-size", "10px")
+//             .style("font-weight", "bold")
+//             .style("fill", "black")
+//             .style("text-anchor", "middle")
+//             .style("alignment-baseline", "middle");
+
+//             console.log("Shelf: ", index+1, " ", shelf.xCoor, " ", shelf.yCoor)
+        
+
+//         svg.selectAll(".routeCircle").raise() // Update the selection to include a dot before the class name
+//     })
+//     console.log("------------------")
+
+//     await new Promise(resolve => setTimeout(resolve, 1000));
+
+// }
+async function draw(svg: any, data: any, shelves: any, xScale: any, yScale: any) {
+    if (data.length === 0 || shelves.size === 0) {
+        return;
+    }
+
+    // Clear existing circles before appending new ones
+    svg.selectAll("circle").remove();
+
+    let shel: any[] = [];
+    data.forEach((element: { shelfId: string }, index: number) => {
+        let key = element.shelfId.split("-")[0] + "-" + element.shelfId.split("-")[1];
+        shel.push(shelves.get(key));
+    });
+
+    // Append circle for each shelf using the array shel
+    svg.selectAll("circle")
+        .data(shel)
+        .enter()
+        .append("circle")
+        .attr("class", "routeCircle")
+        .attr("cx", (d: any) => xScale(d.xCoor))
+        .attr("cy", (d: any) => yScale(d.yCoor))
+        .attr("r", 5)
+        .style("fill", "red")
+        .style("stroke", "black")
+        .style("stroke-width", 1);
+
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+}
+
+
+
 export default async function drawOnePathComparison(
     svgRef: React.MutableRefObject<SVGSVGElement | null>,
     data: any,
+    shelves: any,
     inWidth: number,
     inHeight: number) {
 
-        console.log("Data: ", data)
-        const xmin = -74
-        const xmax = 37.5
-        const ymin = -40
-        const ymax = 39.5
+    // console.log("Data: ", data[0])
+    const xmin = -74
+    const xmax = 37.5
+    const ymin = -40
+    const ymax = 39.5
 
-        const xScale = d3.scaleLinear().domain([xmin, xmax + 11]).range([0, inWidth]);
-        const yScale = d3.scaleLinear().domain([ymin, ymax]).range([inHeight, 0]);
+    const xScale = d3.scaleLinear().domain([xmin, xmax + 11]).range([0, inWidth]);
+    const yScale = d3.scaleLinear().domain([ymin, ymax]).range([inHeight, 0]);
 
-        const svg = d3.select(svgRef.current)
-            .attr("width", inWidth)
-            .attr("height", inHeight)
-            .style("margin-top", 0)
-            .style("margin-left", 0);
+    const svg = d3.select(svgRef.current)
+        .attr("width", inWidth)
+        .attr("height", inHeight)
+        .style("margin-top", 0)
+        .style("margin-left", 0);
 
-        drawWithDelay(svg, data, xScale, yScale);
-
+        
+data.map(async (element) => {
+    // console.log("Element: ", element.routeStops)
+    await draw(svg, element.routeStops, shelves,  xScale, yScale);
+})
 }

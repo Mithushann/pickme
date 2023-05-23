@@ -7,8 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
-import print from '@/util/print';
-import axios from 'axios';
+import getDropDownElements from '../api/getDropDownElements';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -20,24 +19,6 @@ const MenuProps = {
         },
     },
 };
-
-async function getDropDownElements(){
-    try {
-        const start = new Date().getTime();
-        const response = await axios.get("http://localhost:3333/api/getAll");
-        let elapsed = new Date().getTime() - start;
-        
-        print("getDropDownElements: " + Math.ceil(elapsed/1000) + "s");
-
-        const Data = response.data;
-        const RouteIdList = Data.map((d: any) => d.RouteId);
-        const uniqueRouteIdList = [...new Set(RouteIdList)];//remove duplicates
-        return uniqueRouteIdList;
-    }
-    catch (error) {
-        print(error);
-    }
-}
 
 function getStyles(option: string, selectedRoutes: readonly string[], theme: Theme) {
     return {
@@ -55,7 +36,10 @@ export default function MultipleSelectChip(props) {
     const [selectedRoutes, setSelectedRoutes] = React.useState<string[]>([]);
 
     React.useEffect(() => {
-        getDropDownElements().then((data) => setDropDownOptions(data));
+        getDropDownElements().then((data) => {
+            console.log(data)
+            setDropDownOptions(data)
+        });
         props.onSelectedChange(selectedRoutes);
     }, [selectedRoutes]
     );
@@ -93,7 +77,7 @@ export default function MultipleSelectChip(props) {
                     )}
                     MenuProps={MenuProps}
                 >
-                    {DropDownOptions.map((option) => (
+                    {DropDownOptions!= null && DropDownOptions.map((option) => (
                         <MenuItem
                             key={option}
                             value={option}

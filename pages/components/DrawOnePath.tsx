@@ -1,4 +1,4 @@
-// import * as d3 from "d3";
+import * as d3 from "d3";
 import axios from "axios";
 import print from 'util/print';
 import { getAllCords, getCords } from "pages/api/getData";
@@ -9,8 +9,12 @@ export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
 
   let OptimizationId = "clhqcwryx32723906r0iqsreysv";
   if (isStatic) {
-    console.log(RouteId)
+    // console.log(RouteId)
     getCords(OptimizationId, RouteId).then((data) => {
+      if(data.length == 0){
+        return;
+      }
+
       let [routeStops, routeTrajectories] = data;
 
       let routeStopsShelf = routeStops.map((d: any) => {
@@ -47,6 +51,7 @@ export default async function drawOnePath(svg: d3.Selection<SVGSVGElement |
         .attr("d", d3.line()
           .x((d) => xScale(Number(d.xCoor)))
           .y((d) => yScale(Number(d.yCoor)))
+          .curve(d3.curveCardinal.tension(0.5))
         )
         .attr("marker-end", "url(#arrow)");
 

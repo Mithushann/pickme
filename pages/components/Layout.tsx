@@ -173,7 +173,7 @@ function drawArrow(svg, data, xScale, yScale, width, height, color) {
 // .attr("font-weight", "bold")
 
 
-export default function Layout(svgRef: React.RefObject<SVGSVGElement>, userType: string, inWidth = 0, inHeight = 0) {
+export default function Layout(svgRef: React.RefObject<SVGSVGElement>, userType: string, inWidth = 0, inHeight = 0, needArrow=true) {
 
   let racks: any[] = [];
   let depots: any[] = [];
@@ -198,6 +198,9 @@ export default function Layout(svgRef: React.RefObject<SVGSVGElement>, userType:
     const yScale = d3.scaleLinear().domain([ymin - 1500, ymax + 1500]).range([inHeight, 0]); //here
 
     getLayoutRacks(/*here we need to send the dataSetId */).then((data) => {
+      if (data.racks.length === 0) {
+        alert("No racks in the layout")
+      }
       data.racks.map((d: any) => {
         racks.push([(d.topLeft[0]), (d.topLeft[1]), (d.bottomRight[0]), (d.bottomRight[1]), d.id])
       })
@@ -221,12 +224,14 @@ export default function Layout(svgRef: React.RefObject<SVGSVGElement>, userType:
 
         drawDepots(svg, depots, xScale, yScale, "depot_");
 
+        if( needArrow === true){
         getLayoutAisle(/*here we need to send the dataSetId */).then((data) => {
           data.aisles.map((d: any) => {
             aisles.push([d.frontEndX, d.frontEndY, d.tailEndX, d.tailEndY, d.direction])
           })
           drawArrow(svg, aisles, xScale, yScale, inWidth, inHeight, colors.PrimaryColorKvalite);
         })
+      }
 
       });
 

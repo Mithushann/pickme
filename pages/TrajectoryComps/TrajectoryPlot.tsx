@@ -7,7 +7,7 @@ import Chart from "../components/Chart";
 // Rewrite the chart component so that it updates when the selected option changes
 const TrajectoryPlot = (props: { play: boolean; RouteIds: number[]; userType: string }) => {
 
-  console.log("TrajectoryPlot props: ", props);
+  // console.log("TrajectoryPlot props: ", props);
 
   const svg = React.useRef<SVGSVGElement>(null);
 

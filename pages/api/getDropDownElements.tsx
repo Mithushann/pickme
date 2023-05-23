@@ -26,7 +26,8 @@ export default async function getDropDownElements(Id: string = "clhqcwryx3272390
             query: query
         }, { headers: headers });
 
-        const RouteNumber = response.data.data.optimization.subGroups[0].solution.routes;
+        const RouteNumber = response.data.data.optimization.subGroups[0].solution.routes
+        // console.log("RouteNumber: ", response);
 
         return RouteNumber;
     }

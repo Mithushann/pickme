@@ -219,7 +219,7 @@ const PointHeatmap = (props: { userType: string }) => {
 
 
   React.useEffect(() => {
-    Layout(svg, props.userType);
+    Layout(svg, props.userType,0,0, false);
     PointMap(svg)
   }, [svg, props.userType]);
 

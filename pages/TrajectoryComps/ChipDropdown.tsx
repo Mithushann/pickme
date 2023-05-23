@@ -41,7 +41,7 @@ export default function MultipleSelectChip(props) {
     React.useEffect(() => {
         getDropDownElements().then((data) => setDropDownOptions(data));
         props.onSelectedChange(selectedRoutes);
-    }, []
+    }, [selectedRoutes]
     );
 
 
@@ -50,7 +50,6 @@ export default function MultipleSelectChip(props) {
         const {
             target: { value },
         } = event;
-        
         setSelectedRoutes(
             // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
@@ -92,23 +91,3 @@ export default function MultipleSelectChip(props) {
         </div>
     );
 }
-
-
-
-// async function getDropDownElements(){
-//     try {
-//         const start = new Date().getTime();
-//         const response = await axios.get("http://localhost:3333/api/getAll");
-//         let elapsed = new Date().getTime() - start;
-        
-//         print("getDropDownElements: " + Math.ceil(elapsed/1000) + "s");
-
-//         const Data = response.data;
-//         const RouteIdList = Data.map((d: any) => d.RouteId);
-//         const uniqueRouteIdList = [...new Set(RouteIdList)];//remove duplicates
-//         return uniqueRouteIdList;
-//     }
-//     catch (error) {
-//         print(error);
-//     }
-// }
